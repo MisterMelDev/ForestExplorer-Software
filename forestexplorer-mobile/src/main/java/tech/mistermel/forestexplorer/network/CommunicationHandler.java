@@ -104,6 +104,7 @@ public class CommunicationHandler extends SessionAdapter {
 	public void sendLocation(float latitude, float longitude, int satteliteNum) {
 		GPSPacket packet = new GPSPacket(latitude, longitude, satteliteNum);
 		client.getSession().send(packet);
+		logger.info("New location: {} {} with {} sattelites", latitude, longitude, satteliteNum);
 	}
 	
 	public void sendVoltage(float voltage) {
