@@ -1,5 +1,8 @@
 package tech.mistermel.forestexplorer.controller;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,8 +36,13 @@ public class ControllerHandler extends Thread {
 	@Override
 	public void run() {
 		SerialPort[] ports = SerialPort.getCommPorts();
-		this.serial = ports[ports.length - 1];
-		logger.info("Using port {}", serial.getSystemPortName());
+		logger.info("Available ports:");
+		for(SerialPort port : ports) {
+			logger.info("* {}: {}", port.getSystemPortName(), port.getPortDescription());
+		}
+		
+		this.serial = selectPort(ports);
+		logger.info("Using {}", serial.getSystemPortName());
 		
 		if(serial.isOpen()) {
 			logger.warn("Unable to open port, already open");
@@ -49,8 +57,21 @@ public class ControllerHandler extends Thread {
 			return;
 		}
 		this.reset();
-		
 		serial.addDataListener(new MessageListener());
+		logger.info("Controller ready, waiting for handshake");
+	}
+	
+	private static List<String> PRIORITY_PORTS = Arrays.asList("ttyUSB0");
+	
+	private SerialPort selectPort(SerialPort[] ports) {
+		for(SerialPort port : ports) {
+			if(PRIORITY_PORTS.contains(port.getSystemPortName())) {
+				logger.info("{} selected, is priority port", port.getSystemPortName());
+				return port;
+			}
+		}
+		
+		return ports[ports.length - 1];
 	}
 	
 	private void setFault(boolean fault) {
