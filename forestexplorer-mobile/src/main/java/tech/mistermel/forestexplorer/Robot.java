@@ -1,13 +1,10 @@
 package tech.mistermel.forestexplorer;
 
-import java.io.IOException;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import tech.mistermel.forestexplorer.controller.ControllerHandler;
 import tech.mistermel.forestexplorer.network.CommunicationHandler;
-import tech.mistermel.forestexplorer.util.PropertyFile;
 
 public class Robot {
 
@@ -17,18 +14,12 @@ public class Robot {
 	private ControllerHandler controller;
 	
 	public Robot() {
-		try {
-			PropertyFile.initialize();
-		} catch (IOException e) {
-			logger.error("Error while intializing property file", e);
-			return;
-		}
-		
 		this.communication = new CommunicationHandler();
 		this.controller = new ControllerHandler();
 	}
 	
 	public void start() {
+		logger.info("Connecting...");
 		while(!communication.connect()) {
 			logger.warn("Could not connect, retrying in 20 seconds");
 			
