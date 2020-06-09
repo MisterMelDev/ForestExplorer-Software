@@ -156,6 +156,10 @@ public class ControllerHandler extends Thread {
 			return;
 		}
 		
+		if(!cmd.equals("p")) { // pings should not be debug logged
+			logger.debug("Sending command: {}", cmd);
+		}
+		
 		cmd += "\n";
 		byte[] buffer = cmd.getBytes();
 		
@@ -163,16 +167,20 @@ public class ControllerHandler extends Thread {
 	}
 	 
 	public void setMovement(MovementDirection movement) {
-		if(!handshakeCompleted)
+		if(!handshakeCompleted) {
+			logger.debug("Did not send movement, handshake not complete");
 			return;
+		}
 		
 		this.sendCommand("l" + movement.getLeftMotorDir());
 		this.sendCommand("r" + movement.getRightMotorDir());
 	}
 	
 	public void setCameraMovement(CameraMovementDirection movement) {
-		if(!handshakeCompleted)
+		if(!handshakeCompleted) {
+			logger.debug("Did not send camera movement, handshake not complete");
 			return;
+		}
 		
 		this.sendCommand("c" + movement.getDirection());
 	}
