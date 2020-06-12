@@ -3,11 +3,6 @@
 #include <TinyGPS++.h>
 #include <Servo.h>
 
-#define LED_PIN 7
-#define LED_NUM 18
-#define HEADLIGHT_NUM 16
-Adafruit_NeoPixel pixels = Adafruit_NeoPixel(LED_NUM, LED_PIN, NEO_GRB + NEO_KHZ800);
-
 #define GPS_RX 9 // tx of the module
 #define GPS_TX 8 // rx of the module
 #define GPS_BAUDRATE 9600
@@ -26,11 +21,6 @@ Servo cameraServo;
 
 String receivedData, packet;
 
-int brightness = 100;
-boolean warningLights, warningLightsState;
-long warningLightsTimer;
-boolean headlights;
-
 long voltageTimer;
 long pingSendTimer, pingReceiveTimer;
 
@@ -40,8 +30,7 @@ long handshakeTimer;
 void setup() {
   Serial.begin(115200);
 
-  pixels.begin();
-  pixels.show();
+  setupLights();
 
   gpsSerial.begin(GPS_BAUDRATE);
   cameraServo.attach(SERVO_PIN);
@@ -95,54 +84,10 @@ void reset() {
   setRightMotor(0);
   setLeftMotor(0);
   setServo(0);
-  setHeadlights(false);
-  setWarningLights(false);
-  brightness = 100;
+  setHeadlightsEnabled(false);
+  setWarningLightsEnabled(false);
+  setBrightness(100);
   handshakeCompleted = false;
-}
-
-void setHeadlights(bool enabled) {
-  if(enabled) {
-    int fullBrightness = getBrightness(255);
-    for(int i = 0; i < HEADLIGHT_NUM; i++) {
-      pixels.setPixelColor(i, pixels.Color(fullBrightness, fullBrightness, fullBrightness));
-    }
-  } else {
-    for(int i = 0; i < HEADLIGHT_NUM; i++) {
-      pixels.setPixelColor(i, pixels.Color(0, 0, 0));
-    }
-  }
-  headlights = enabled;
-  pixels.show();
-}
-
-void setWarningLights(bool enabled) {
-  warningLights = enabled;
-  if(!enabled) {
-    warningLightsEnabled(false);
-  }
-}
-
-void warningLightsEnabled(bool enabled) {
-  if(enabled) {
-    int fullBrightness = getBrightness(255);
-    int lessBrightness = getBrightness(165);
-       
-    for(int i = HEADLIGHT_NUM; i < HEADLIGHT_NUM + 2; i++) {
-      pixels.setPixelColor(i, pixels.Color(fullBrightness, lessBrightness, 0));
-    }
-  } else {
-    for(int i = HEADLIGHT_NUM; i < HEADLIGHT_NUM + 2; i++) {
-      pixels.setPixelColor(i, pixels.Color(0, 0, 0));
-    }
-  }
-  
-  warningLightsState = enabled;
-  pixels.show();
-}
-
-int getBrightness(int max) {
-  return max * brightness / 100;
 }
 
 void sendVoltage() {
@@ -160,10 +105,7 @@ void sendVoltage() {
 }
 
 void loop() {
-  if(warningLights && millis() >= warningLightsTimer) {
-    warningLightsEnabled(!warningLightsState);
-    warningLightsTimer = millis() + (warningLightsEnabled ? 500 : 1000);
-  }
+  loopLights();
 
   /*if(millis() >= voltageTimer) {
     sendVoltage();
@@ -232,20 +174,19 @@ void loop() {
 
     if(packet == "h") { // Set headlights (true/false)
       bool enabled = receivedData.substring(1) == "1";
-      setHeadlights(enabled);
+      setHeadlightsEnabled(enabled);
       return;
     }
 
     if(packet == "w") { // Set warning lights (true/false)
       bool enabled = receivedData.substring(1) == "1";
-      setWarningLights(enabled);
+      setWarningLightsEnabled(enabled);
       return;
     }
 
     if(packet == "b") { // Set light brightness (0-100)
       int value = receivedData.substring(1).toInt();
-      brightness = value;
-      setHeadlights(headlights); // reapply headlights for brightness adjustment. warning lights will adjust on next cycle
+      setBrightness(value);
       return;
     }
 
