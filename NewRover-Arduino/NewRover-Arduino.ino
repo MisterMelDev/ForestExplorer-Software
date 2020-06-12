@@ -19,14 +19,6 @@ Servo cameraServo;
 #define B1 4
 #define B2 5
 
-String receivedData, packet;
-
-long voltageTimer;
-long pingSendTimer, pingReceiveTimer;
-
-boolean handshakeCompleted;
-long handshakeTimer;
-
 void setup() {
   Serial.begin(115200);
 
@@ -90,47 +82,18 @@ void reset() {
   handshakeCompleted = false;
 }
 
-void sendVoltage() {
-  float vin = analogRead(VOLTAGE_PIN) * (5.0 / 1023);
-
-  Serial.print("vin");
-  Serial.println(vin);
-  
-  float vout = vin * ((1488 + 892) / 892);
-
-  Serial.print("vout");
-  Serial.println(vout);
-
-  voltageTimer = millis() + 15000;
-}
-
 void loop() {
   loopLights();
 
-  /*if(millis() >= voltageTimer) {
-    sendVoltage();
-  }*/
-
-  if(!handshakeCompleted && millis() >= handshakeTimer) {
-    Serial.println("H");
-    handshakeTimer = millis() + 1000;
-    return;
+  if(Serial.available() > 0) {
+    serialAvailable();
   }
-
-  if(handshakeCompleted && millis() >= pingReceiveTimer) {
-    reset();
-    return;
-  }
-
-  if(handshakeCompleted && millis() >= pingSendTimer) {
-    Serial.println("p");
-    pingSendTimer = millis() + 500;
-    return;
-  }
-
+  
   while(gpsSerial.available() > 0) {
     gps.encode(gpsSerial.read());
   }
+
+  loopCommunicationTimers();
 
   if(gps.location.isUpdated() || gps.satellites.isUpdated()) {
     Serial.print("l");
@@ -139,60 +102,5 @@ void loop() {
     Serial.print(gps.location.lng());
     Serial.print("/");
     Serial.println(gps.satellites.value());
-  }
-  
-  if(Serial.available() > 0) {
-    receivedData = Serial.readStringUntil('\n');
-    packet = receivedData.substring(0, 1);
-
-    if(!handshakeCompleted) {
-      if(packet == "H") {
-        handshakeCompleted = true;
-        pingReceiveTimer = millis() + 1000;
-      }
-
-      return;
-    }
-
-    if(packet == "r") { // Set right motor (-1,0,1)
-      int dir = receivedData.substring(1).toInt();
-      setRightMotor(dir);
-      return;
-    }
-
-    if(packet == "l") { // Set left motor (-1,0,1)
-      int dir = receivedData.substring(1).toInt();
-      setLeftMotor(dir);
-      return;
-    }
-
-    if(packet == "c") { // Set camera servo (-1,0,1)
-      int dir = receivedData.substring(1).toInt();
-      setServo(dir);
-      return;
-    }
-
-    if(packet == "h") { // Set headlights (true/false)
-      bool enabled = receivedData.substring(1) == "1";
-      setHeadlightsEnabled(enabled);
-      return;
-    }
-
-    if(packet == "w") { // Set warning lights (true/false)
-      bool enabled = receivedData.substring(1) == "1";
-      setWarningLightsEnabled(enabled);
-      return;
-    }
-
-    if(packet == "b") { // Set light brightness (0-100)
-      int value = receivedData.substring(1).toInt();
-      setBrightness(value);
-      return;
-    }
-
-    if(packet == "p") {
-      pingReceiveTimer = millis() + 1000;
-      return;
-    }
   }
 }
