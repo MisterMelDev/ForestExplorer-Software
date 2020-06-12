@@ -52,7 +52,16 @@ public class Slider extends ClickableComponent {
 	}
 	
 	@Override
+	public boolean intersects(int mouseX, int mouseY) {
+		return mouseX >= x && mouseY >= y - 10 && mouseX <= x + width && mouseY <= y + 10;
+	}
+	
+	@Override
 	public void onClick() {
+		if(applet.mouseX < x || applet.mouseX > x + width) {
+			return;
+		}
+		
 		xPos = applet.mouseX - x;
 		percent = (int) PApplet.map(xPos, 0, width, 0, 100);
 		
