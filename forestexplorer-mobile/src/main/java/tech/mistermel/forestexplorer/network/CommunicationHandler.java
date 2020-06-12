@@ -19,7 +19,7 @@ import tech.mistermel.forestexplorer.common.packet.KeepAlivePacket;
 import tech.mistermel.forestexplorer.common.packet.MovementPacket;
 import tech.mistermel.forestexplorer.common.packet.SetLightingPacket;
 import tech.mistermel.forestexplorer.common.packet.SetStreamingPacket;
-import tech.mistermel.forestexplorer.common.packet.VoltagePacket;
+import tech.mistermel.forestexplorer.common.packet.PowerPacket;
 import tech.mistermel.forestexplorer.util.PropertyFile;
 import tech.mistermel.forestexplorer.util.StreamerUtil;
 
@@ -44,7 +44,6 @@ public class CommunicationHandler extends SessionAdapter {
 		
 		if(packet instanceof KeepAlivePacket) {
 			KeepAlivePacket keepAlivePacket = (KeepAlivePacket) packet;
-			logger.debug("KeepAlivePacket (time: {})", keepAlivePacket.getPingTime());
 			this.sendKeepAlive(keepAlivePacket.getPingTime());
 			return;
 		}
@@ -107,8 +106,8 @@ public class CommunicationHandler extends SessionAdapter {
 		logger.info("New location: {} {} with {} sattelites", latitude, longitude, satteliteNum);
 	}
 	
-	public void sendVoltage(float voltage) {
-		VoltagePacket packet = new VoltagePacket(voltage);
+	public void sendPower(float voltage, float current) {
+		PowerPacket packet = new PowerPacket(voltage, current);
 		client.getSession().send(packet);
 	}
 	

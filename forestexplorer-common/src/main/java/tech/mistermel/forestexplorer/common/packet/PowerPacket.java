@@ -6,25 +6,29 @@ import com.github.steveice10.packetlib.io.NetInput;
 import com.github.steveice10.packetlib.io.NetOutput;
 import com.github.steveice10.packetlib.packet.Packet;
 
-public class VoltagePacket implements Packet {
+public class PowerPacket implements Packet {
 
 	private float voltage;
+	private float current;
 	
 	@SuppressWarnings("unused")
-	private VoltagePacket() {}
+	private PowerPacket() {}
 	
-	public VoltagePacket(float voltage) {
+	public PowerPacket(float voltage, float current) {
 		this.voltage = voltage;
+		this.current = current;
 	}
 	
 	@Override
 	public void write(NetOutput out) throws IOException {
 		out.writeFloat(voltage);
+		out.writeFloat(current);
 	}
 	
 	@Override
 	public void read(NetInput in) throws IOException {
 		this.voltage = in.readFloat();
+		this.current = in.readFloat();
 	}
 	
 	@Override
@@ -34,6 +38,10 @@ public class VoltagePacket implements Packet {
 	
 	public float getVoltage() {
 		return voltage;
+	}
+	
+	public float getCurrent() {
+		return current;
 	}
 	
 }

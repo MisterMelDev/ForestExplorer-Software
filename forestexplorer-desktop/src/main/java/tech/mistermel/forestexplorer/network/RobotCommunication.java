@@ -21,9 +21,9 @@ import tech.mistermel.forestexplorer.common.packet.FaultPacket;
 import tech.mistermel.forestexplorer.common.packet.GPSPacket;
 import tech.mistermel.forestexplorer.common.packet.KeepAlivePacket;
 import tech.mistermel.forestexplorer.common.packet.MovementPacket;
+import tech.mistermel.forestexplorer.common.packet.PowerPacket;
 import tech.mistermel.forestexplorer.common.packet.SetLightingPacket;
 import tech.mistermel.forestexplorer.common.packet.SetStreamingPacket;
-import tech.mistermel.forestexplorer.common.packet.VoltagePacket;
 
 public class RobotCommunication extends SessionAdapter {
 
@@ -32,7 +32,7 @@ public class RobotCommunication extends SessionAdapter {
 	
 	private Server server;
 	
-	private float voltage;
+	private float voltage, current;
 	private float latitude, longitude;
 	private int satteliteNum;
 	
@@ -55,8 +55,10 @@ public class RobotCommunication extends SessionAdapter {
 	}
 	
 	public void start() {
+		logger.info("Starting server...");
 		server.bind(true);
 		new KeepAliveTask().start();
+		logger.info("Started server on port {}", PORT);
 	}
 	
 	@Override
@@ -71,8 +73,10 @@ public class RobotCommunication extends SessionAdapter {
 			return;
 		}
 		
-		if(packet instanceof VoltagePacket) {
-			voltage = ((VoltagePacket) packet).getVoltage();
+		if(packet instanceof PowerPacket) {
+			PowerPacket powerPacket = (PowerPacket) packet;
+			voltage = powerPacket.getVoltage();
+			current = powerPacket.getCurrent();
 			return;
 		}
 		
@@ -188,6 +192,10 @@ public class RobotCommunication extends SessionAdapter {
 	
 	public float getVoltage() {
 		return voltage;
+	}
+	
+	public float getCurrent() {
+		return current;
 	}
 	
 	public float getLatitude() {
