@@ -19,7 +19,7 @@ This repository contains all code for the ForestExplorer project.
 Subtotal: €261,65
 
 ## Folder structure
-`forestexplorer-common` contains code used in both `forestexplorer-desktop` and `forestexplorer-mobile`, like packets.  
-`forestexplorer-desktop` is the program run on desktop to control the robot.  
-`forestexplorer-mobile` is the program running on the RPi.  
-`NewRover-Arduino` contains the code in the Arduino controller, which communicates over USB with the RPi.
+* **forestexplorer-common**: Contains code used in the deskstop and mobile applications, like networking code.
+* **forestexplorer-desktop**: The application running on desktop to control the robot.
+* **forestexplorer-mobile**: The application running on the RPi in the robot.
+* **forestexplorer-arduino**: The code for the Arduino, which communicates over USB Serial with the RPi.
