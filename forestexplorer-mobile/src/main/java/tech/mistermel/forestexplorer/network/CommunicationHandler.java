@@ -17,9 +17,9 @@ import tech.mistermel.forestexplorer.common.packet.FaultPacket;
 import tech.mistermel.forestexplorer.common.packet.GPSPacket;
 import tech.mistermel.forestexplorer.common.packet.KeepAlivePacket;
 import tech.mistermel.forestexplorer.common.packet.MovementPacket;
+import tech.mistermel.forestexplorer.common.packet.PowerPacket;
 import tech.mistermel.forestexplorer.common.packet.SetLightingPacket;
 import tech.mistermel.forestexplorer.common.packet.SetStreamingPacket;
-import tech.mistermel.forestexplorer.common.packet.PowerPacket;
 import tech.mistermel.forestexplorer.util.PropertyFile;
 import tech.mistermel.forestexplorer.util.StreamerUtil;
 
@@ -31,13 +31,20 @@ public class CommunicationHandler extends SessionAdapter {
 	private Client client;
 	
 	private boolean batteryLowFault;
+	private long lastPingTime;
 	
 	public boolean connect() {
 		this.client = new Client(PropertyFile.getIP(), PORT, new ClientProtocol(), new TcpSessionFactory());
 		client.getSession().addListener(this);
 		
 		client.getSession().connect(true);
-		return client.getSession().isConnected();
+		if(!client.getSession().isConnected()) {
+			return false;
+		}
+		
+		lastPingTime = System.currentTimeMillis() + 2000; // Allow some extra time for the first keepalive packet to be received
+		new KeepAliveTask().start();
+		return true;
 	}
 	
 	@Override
@@ -47,6 +54,7 @@ public class CommunicationHandler extends SessionAdapter {
 		if(packet instanceof KeepAlivePacket) {
 			KeepAlivePacket keepAlivePacket = (KeepAlivePacket) packet;
 			this.sendKeepAlive(keepAlivePacket.getPingTime());
+			this.lastPingTime = keepAlivePacket.getPingTime();
 			return;
 		}
 		
@@ -85,10 +93,27 @@ public class CommunicationHandler extends SessionAdapter {
 		}
 	}
 	
+	private class KeepAliveTask extends Thread {
+		
+		@Override
+		public void run() {
+			while(lastPingTime + 1500 > System.currentTimeMillis()) {
+				try {
+					Thread.sleep(100);
+				} catch (InterruptedException e) {
+					break;
+				}
+			}
+			
+			client.getSession().disconnect("Connection timeout");
+			Launcher.instance().reconnect(5);
+		}
+		
+	}
+	
 	@Override
 	public void disconnected(DisconnectedEvent event) {
 		logger.warn("Disconnected from server, reason: {}", event.getReason());
-		logger.error("Error", event.getCause());
 		Launcher.instance().getControllerHandler().safeState();
 	}
 	

@@ -19,6 +19,15 @@ public class Robot {
 	}
 	
 	public void start() {
+		this.reconnect(0);
+		controller.start();
+	}
+	
+	public void reconnect(int delay) {
+		try {
+			Thread.sleep(delay * 1000);
+		} catch (InterruptedException e) {}
+		
 		logger.info("Connecting...");
 		while(!communication.connect()) {
 			logger.warn("Could not connect, retrying in 20 seconds");
@@ -28,8 +37,6 @@ public class Robot {
 			} catch (InterruptedException e) {}
 		}
 		logger.info("Connected!");
-		
-		controller.start();
 	}
 	
 	public CommunicationHandler getCommunicationHandler() {
