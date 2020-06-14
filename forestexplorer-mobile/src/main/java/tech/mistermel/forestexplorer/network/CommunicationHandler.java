@@ -30,6 +30,8 @@ public class CommunicationHandler extends SessionAdapter {
 	
 	private Client client;
 	
+	private boolean batteryLowFault;
+	
 	public boolean connect() {
 		this.client = new Client(PropertyFile.getIP(), PORT, new ClientProtocol(), new TcpSessionFactory());
 		client.getSession().addListener(this);
@@ -109,6 +111,14 @@ public class CommunicationHandler extends SessionAdapter {
 	public void sendPower(float voltage, float current) {
 		PowerPacket packet = new PowerPacket(voltage, current);
 		client.getSession().send(packet);
+		
+		if(voltage < PropertyFile.getMinVoltage() && !batteryLowFault) {
+			this.setFault(FaultType.BATTERY_TOO_LOW, true);
+			this.batteryLowFault = true;
+		} else if(voltage > PropertyFile.getMinVoltage() && batteryLowFault) {
+			this.setFault(FaultType.BATTERY_TOO_LOW, false);
+			this.batteryLowFault = false;
+		}
 	}
 	
 	public Client getClient() {

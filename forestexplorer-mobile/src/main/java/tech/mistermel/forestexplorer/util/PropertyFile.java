@@ -16,6 +16,7 @@ public class PropertyFile {
 	private static final Logger logger = LoggerFactory.getLogger(PropertyFile.class);
 	
 	private static String ip;
+	private static float minVoltage;
 	
 	public static boolean initialize() throws IOException {
 		if(!FILE.exists())
@@ -30,11 +31,21 @@ public class PropertyFile {
 		}
 		ip = properties.getProperty("ip");
 		
+		if(!properties.containsKey("minVoltage")) {
+			logger.error("config.properties must contain 'minVoltage' key");
+			return false;
+		}
+		minVoltage = Float.parseFloat(properties.getProperty("minVoltage"));
+		
 		return true;
 	}
 	
 	public static String getIP() {
 		return ip;
+	}
+	
+	public static float getMinVoltage() {
+		return minVoltage;
 	}
 	
 }
