@@ -22,4 +22,4 @@ Subtotal: €261,65
 * **forestexplorer-common**: Contains code used in the deskstop and mobile applications, like networking code.
 * **forestexplorer-desktop**: The application running on desktop to control the robot.
 * **forestexplorer-mobile**: The application running on the RPi in the robot.
-* **forestexplorer-arduino**: The code for the Arduino, which communicates over USB Serial with the RPi.
+* **ForestExplorer-Arduino**: The code for the Arduino, which communicates over USB Serial with the RPi.
