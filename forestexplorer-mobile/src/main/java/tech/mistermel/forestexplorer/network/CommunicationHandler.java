@@ -57,7 +57,7 @@ public class CommunicationHandler extends SessionAdapter {
 		if(packet instanceof KeepAlivePacket) {
 			KeepAlivePacket keepAlivePacket = (KeepAlivePacket) packet;
 			this.sendKeepAlive(keepAlivePacket.getPingTime());
-			this.lastPingTime = keepAlivePacket.getPingTime();
+			this.lastPingTime = System.currentTimeMillis();
 			return;
 		}
 		
@@ -100,7 +100,7 @@ public class CommunicationHandler extends SessionAdapter {
 		
 		@Override
 		public void run() {
-			while(lastPingTime + 1500 > System.currentTimeMillis()) {
+			while(lastPingTime + 3000 > System.currentTimeMillis()) {
 				try {
 					Thread.sleep(100);
 				} catch (InterruptedException e) {
