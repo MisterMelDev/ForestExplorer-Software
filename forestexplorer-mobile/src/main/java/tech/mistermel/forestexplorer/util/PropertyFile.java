@@ -17,6 +17,7 @@ public class PropertyFile {
 	
 	private static String ip;
 	private static float minVoltage;
+	private static int streamWidth, streamHeight, streamFps;
 	
 	public static boolean initialize() throws IOException {
 		if(!FILE.exists())
@@ -37,6 +38,24 @@ public class PropertyFile {
 		}
 		minVoltage = Float.parseFloat(properties.getProperty("minVoltage"));
 		
+		if(!properties.containsKey("streamWidth")) {
+			logger.error("config.properties must contain 'streamWidth' key");
+			return false;
+		}
+		streamWidth = Integer.parseInt(properties.getProperty("streamWidth"));
+
+		if(!properties.containsKey("streamHeight")) {
+			logger.error("config.properties must contain 'streamHeight' key");
+			return false;
+		}
+		streamHeight = Integer.parseInt(properties.getProperty("streamHeight"));
+		
+		if(!properties.containsKey("streamFps")) {
+			logger.error("config.properties must contain 'streamFps' key");
+			return false;
+		}
+		streamFps = Integer.parseInt(properties.getProperty("streamFps"));
+		
 		return true;
 	}
 	
@@ -46,6 +65,18 @@ public class PropertyFile {
 	
 	public static float getMinVoltage() {
 		return minVoltage;
+	}
+	
+	public static int getStreamWidth() {
+		return streamWidth;
+	}
+	
+	public static int getStreamHeight() {
+		return streamHeight;
+	}
+	
+	public static int getStreamFps() {
+		return streamFps;
 	}
 	
 }

@@ -10,7 +10,7 @@ public class StreamerUtil {
 	private StreamerUtil() {}
 	
 	private static final Logger logger = LoggerFactory.getLogger(StreamerUtil.class);
-	private static final String CMD = "gst-launch-1.0 v4l2src device=/dev/video0 ! \"image/jpeg, width=1280, height=720, framerate=15/1\" ! rtpjpegpay ! udpsink host={{IP}} port=5001";
+	private static final String CMD = "gst-launch-1.0 v4l2src device=/dev/video0 ! \"image/jpeg, width={{WIDTH}}, height={{HEIGHT}}, framerate={{FPS}}/1\" ! rtpjpegpay ! udpsink host={{IP}} port=5001";
 	
 	private static Process process;
 	
@@ -21,7 +21,13 @@ public class StreamerUtil {
 		logger.info("Starting streamer");
 
 		try {
-			process = new ProcessBuilder(new String[] {"bash", "-c", CMD.replace("{{IP}}", PropertyFile.getIP())})
+			String cmd = CMD
+					.replace("{{IP}}", PropertyFile.getIP())
+					.replace("{{WIDTH}}", Integer.toString(PropertyFile.getStreamWidth()))
+					.replace("{{HEIGHT}}", Integer.toString(PropertyFile.getStreamHeight()))
+					.replace("{{FPS}}", Integer.toString(PropertyFile.getStreamFps()));
+			
+			process = new ProcessBuilder(new String[] {"bash", "-c", cmd})
 					.inheritIO()
 					.start();
 		} catch (IOException e) {
