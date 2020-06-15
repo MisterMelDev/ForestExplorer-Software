@@ -19,6 +19,9 @@ Servo cameraServo;
 #define B1 4
 #define B2 5
 
+long maxLocationTime;
+bool gpsFault;
+
 void setup() {
   Serial.begin(115200);
 
@@ -79,7 +82,7 @@ void reset() {
   setHeadlightsEnabled(false);
   setWarningLightsEnabled(false);
   setBrightness(100);
-  handshakeCompleted = false;
+  resetCommunication();
 }
 
 void loop() {
@@ -97,10 +100,13 @@ void loop() {
 
   if(gps.location.isUpdated() || gps.satellites.isUpdated()) {
     Serial.print("l");
-    Serial.print(gps.location.lat());
+    Serial.print(gps.location.lat(), 6);
     Serial.print("/");
-    Serial.print(gps.location.lng());
+    Serial.print(gps.location.lng(), 6);
     Serial.print("/");
     Serial.println(gps.satellites.value());
+
+    maxLocationTime = millis() + 5000;
+    gpsFault = false;
   }
 }

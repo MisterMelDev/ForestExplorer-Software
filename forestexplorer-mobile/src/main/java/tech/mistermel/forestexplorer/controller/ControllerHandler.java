@@ -102,7 +102,14 @@ public class ControllerHandler extends Thread {
 				}
 				
 				return;
+			}			
+			
+			if(msg.equals("p")) {
+				sendCommand("p");
+				return;
 			}
+			
+			logger.debug("Controller message recieved: {}", msg);
 			
 			if(msg.equals("RST")) {
 				reset();
@@ -111,8 +118,8 @@ public class ControllerHandler extends Thread {
 				return;
 			}
 			
-			if(msg.equals("p")) {
-				sendCommand("p");
+			if(msg.equals("lf")) {
+				Launcher.instance().getCommunicationHandler().setFault(FaultType.GPS, true);
 				return;
 			}
 			
@@ -123,6 +130,7 @@ public class ControllerHandler extends Thread {
 				int satteliteNum = Integer.parseInt(args[2]);
 				
 				Launcher.instance().getCommunicationHandler().sendLocation(latitude, longitude, satteliteNum);
+				Launcher.instance().getCommunicationHandler().setFault(FaultType.GPS, false);
 				return;
 			}
 		}

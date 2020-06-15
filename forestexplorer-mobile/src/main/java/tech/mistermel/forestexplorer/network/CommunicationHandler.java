@@ -1,5 +1,8 @@
 package tech.mistermel.forestexplorer.network;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,9 +32,9 @@ public class CommunicationHandler extends SessionAdapter {
 	private static final Logger logger = LoggerFactory.getLogger(CommunicationHandler.class);
 	
 	private Client client;
-	
-	private boolean batteryLowFault;
 	private long lastPingTime;
+	
+	private Set<FaultType> activeFaults = new HashSet<>();
 	
 	public boolean connect() {
 		this.client = new Client(PropertyFile.getIP(), PORT, new ClientProtocol(), new TcpSessionFactory());
@@ -118,6 +121,18 @@ public class CommunicationHandler extends SessionAdapter {
 	}
 	
 	public void setFault(FaultType type, boolean active) {
+		if(active) {
+			if(activeFaults.contains(type)) {
+				return;
+			}
+			activeFaults.add(type);
+		} else {
+			if(!activeFaults.contains(type)) {
+				return;
+			}
+			activeFaults.remove(type);
+		}
+		
 		FaultPacket packet = new FaultPacket(type, active);
 		client.getSession().send(packet);
 	}
@@ -137,13 +152,7 @@ public class CommunicationHandler extends SessionAdapter {
 		PowerPacket packet = new PowerPacket(voltage, current);
 		client.getSession().send(packet);
 		
-		if(voltage < PropertyFile.getMinVoltage() && !batteryLowFault) {
-			this.setFault(FaultType.BATTERY_TOO_LOW, true);
-			this.batteryLowFault = true;
-		} else if(voltage > PropertyFile.getMinVoltage() && batteryLowFault) {
-			this.setFault(FaultType.BATTERY_TOO_LOW, false);
-			this.batteryLowFault = false;
-		}
+		this.setFault(FaultType.BATTERY_TOO_LOW, voltage < PropertyFile.getMinVoltage());
 	}
 	
 	public Client getClient() {

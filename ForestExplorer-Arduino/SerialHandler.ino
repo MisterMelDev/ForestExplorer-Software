@@ -10,19 +10,26 @@ void loopCommunicationTimers() {
   if(!handshakeCompleted && millis() >= handshakeTimer) {
     Serial.println("H");
     handshakeTimer = millis() + 1000;
-    return;
   }
 
   if(handshakeCompleted && millis() >= pingReceiveTimer) {
     reset();
-    return;
   }
 
   if(handshakeCompleted && millis() >= pingSendTimer) {
     Serial.println("p");
     pingSendTimer = millis() + 500;
-    return;
   }
+
+  if(!gpsFault && millis() >= maxLocationTime) {
+    gpsFault = true;
+    Serial.println("lf");
+  }
+}
+
+void resetCommunication() {
+  handshakeCompleted = false;
+  
 }
 
 void serialAvailable() {

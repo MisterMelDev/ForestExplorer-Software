@@ -4,7 +4,8 @@ public enum FaultType {
 
 	CONTROLLER_COMMUNICATION("Controller communication failed"),
 	BATTERY_TOO_LOW("Battery too low"),
-	CURRENT_SENSOR("Current sensor failure");
+	CURRENT_SENSOR("Current sensor failure"),
+	GPS("GPS failure");
 	
 	private String displayName;
 	
