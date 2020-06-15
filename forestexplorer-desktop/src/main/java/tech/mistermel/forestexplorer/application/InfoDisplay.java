@@ -48,6 +48,12 @@ public class InfoDisplay extends PApplet {
 		this.transmitVideoCheckbox = new Checkbox(this, "Transmit video", 10, 50);
 		transmitVideoCheckbox.setCallback((checked) -> {
 			robotComm.setStreamingEnabled(checked);
+			
+			if(checked) {
+				StreamerUtil.showStream();
+			} else {
+				StreamerUtil.hideStream();
+			}
 		});
 
 		this.brightnessSlider = new Slider(this, "Lights Brightness", 200, 30, 100);
