@@ -1,7 +1,7 @@
 #include <Adafruit_NeoPixel.h>
 #include <SoftwareSerial.h>
 #include <TinyGPS++.h>
-#include <Servo.h>
+#include <PWMServo.h>
 
 #define GPS_RX 9 // tx of the module
 #define GPS_TX 8 // rx of the module
@@ -11,7 +11,7 @@ TinyGPSPlus gps;
 
 #define SERVO_PIN 10
 #define SERVO_SPEED 10 // max 90
-Servo cameraServo;
+PWMServo cameraServo;
 
 #define VOLTAGE_PIN A1
 #define A1 3
