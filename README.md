@@ -13,8 +13,10 @@ This repository contains all code for the ForestExplorer project.
   * 18x WS2812B LEDs - €10,00
   * GY-NEO6MV2 GPS module - €14,30
   * MPU9250 accelerometer/gyroscope/magnetometer module - €9,00
+  * 2x SG90 9G servo - €7,90
 * LM2596 buck converter (set to 5V) - €3,00
 * 4S 5200mAh Turnigy LiPo - €31,95
+* 3-4S LiPo battery voltage tester/alarm - €3,05
 
 Subtotal: €261,65
 
