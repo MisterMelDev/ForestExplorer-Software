@@ -6,7 +6,7 @@ This repository contains all code for the ForestExplorer project.
 * Raspberry Pi 3B+ with: - €39,95
   * Logitech C270 webcam - €29,95
   * USB connection to Arduino - €0,50
-  * 32GB SD card - €6
+  * 32GB SD card - €6,00
 * Arduino Nano with: - €5,90
   * Cytron MDD3A motor driver - €7,20
   * ACS711EX -15.5A to 15.5A current sensor - €3,95
@@ -18,7 +18,7 @@ This repository contains all code for the ForestExplorer project.
 * 4S 5200mAh Turnigy LiPo - €31,95
 * 3-4S LiPo battery voltage tester/alarm - €3,05
 
-Subtotal: €261,65
+Subtotal: €272,60
 
 ## Folder structure
 * **forestexplorer-common**: Contains code used in the deskstop and mobile applications, like networking code.
