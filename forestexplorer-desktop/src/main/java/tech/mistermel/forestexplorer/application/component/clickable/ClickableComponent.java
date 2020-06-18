@@ -1,4 +1,6 @@
-package tech.mistermel.forestexplorer.application.component;
+package tech.mistermel.forestexplorer.application.component.clickable;
+
+import tech.mistermel.forestexplorer.application.component.Component;
 
 public abstract class ClickableComponent implements Component {
 

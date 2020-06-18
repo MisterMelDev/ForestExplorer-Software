@@ -1,4 +1,4 @@
-package tech.mistermel.forestexplorer.application.component;
+package tech.mistermel.forestexplorer.application.component.clickable;
 
 import processing.core.PApplet;
 
