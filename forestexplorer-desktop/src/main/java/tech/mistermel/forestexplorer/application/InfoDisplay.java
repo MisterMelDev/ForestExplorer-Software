@@ -98,6 +98,7 @@ public class InfoDisplay extends PApplet {
 		brightnessSlider.draw();
 		movementVisualizer.draw();
 
+		textSize(14);
 		int clientCount = robotComm.getConnectedCount();
 		if(clientCount == 0) {
 			String text = "Nothing connected";
@@ -150,8 +151,7 @@ public class InfoDisplay extends PApplet {
 
 	@Override
 	public void keyPressed() {
-		if (!pressedKeys.contains(keyCode)) {
-			pressedKeys.add(keyCode);
+		if(pressedKeys.add(keyCode)) {
 			this.calculateMovements();
 		}
 	}

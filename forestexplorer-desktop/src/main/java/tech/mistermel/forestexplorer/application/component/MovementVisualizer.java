@@ -25,10 +25,10 @@ public class MovementVisualizer implements Component {
 		applet.strokeWeight(8);
 		
 		int lineOffset = GAP_MIDDLE + LINE_LENGTH;
-		drawLine(movement.name().contains("FORWARD"), x, y - GAP_MIDDLE, x, y - lineOffset);
-		drawLine(movement.name().contains("LEFT"), x - GAP_MIDDLE, y, x - lineOffset, y);
-		drawLine(movement.name().contains("RIGHT"), x + GAP_MIDDLE, y, x + lineOffset, y);
-		drawLine(movement.name().contains("BACKWARD"), x, y + GAP_MIDDLE, x, y + lineOffset);
+		drawLine(MovementDirection.isForwards(movement), x, y - GAP_MIDDLE, x, y - lineOffset);
+		drawLine(MovementDirection.isLeft(movement), x - GAP_MIDDLE, y, x - lineOffset, y);
+		drawLine(MovementDirection.isRight(movement), x + GAP_MIDDLE, y, x + lineOffset, y);
+		drawLine(MovementDirection.isBackwards(movement), x, y + GAP_MIDDLE, x, y + lineOffset);
 		
 		drawLine(cameraMovement == CameraMovementDirection.LEFT, x - lineOffset, y - DIAGONAL_GAP, x - DIAGONAL_GAP, y - lineOffset);
 		drawLine(cameraMovement == CameraMovementDirection.RIGHT, x + lineOffset, y - DIAGONAL_GAP, x + DIAGONAL_GAP, y - lineOffset);
