@@ -8,12 +8,12 @@ import org.slf4j.LoggerFactory;
 
 import processing.core.PApplet;
 import tech.mistermel.forestexplorer.Launcher;
-import tech.mistermel.forestexplorer.application.component.Checkbox;
-import tech.mistermel.forestexplorer.application.component.ClickableComponent;
+import tech.mistermel.forestexplorer.application.component.FaultList;
 import tech.mistermel.forestexplorer.application.component.MovementVisualizer;
-import tech.mistermel.forestexplorer.application.component.Slider;
+import tech.mistermel.forestexplorer.application.component.clickable.Checkbox;
+import tech.mistermel.forestexplorer.application.component.clickable.ClickableComponent;
+import tech.mistermel.forestexplorer.application.component.clickable.Slider;
 import tech.mistermel.forestexplorer.common.CameraMovementDirection;
-import tech.mistermel.forestexplorer.common.FaultType;
 import tech.mistermel.forestexplorer.common.MovementDirection;
 import tech.mistermel.forestexplorer.network.RobotCommunication;
 
@@ -26,6 +26,7 @@ public class InfoDisplay extends PApplet {
 	private Checkbox headlightsCheckbox, warningLightsCheckbox, transmitVideoCheckbox;
 	private Slider brightnessSlider;
 	private MovementVisualizer movementVisualizer;
+	private FaultList faultList;
 
 	private Set<Integer> pressedKeys = new HashSet<>();
 	private ClickableComponent draggingComponent;
@@ -63,6 +64,7 @@ public class InfoDisplay extends PApplet {
 		});
 
 		this.movementVisualizer = new MovementVisualizer(this, width / 2, height / 2);
+		this.faultList = new FaultList(this, 100, 100);
 	}
 
 	public void heavySetup() {
@@ -74,7 +76,7 @@ public class InfoDisplay extends PApplet {
 	public void draw() {
 		background(0);
 
-		if (initStage == 0) {
+		if(initStage == 0) {
 			textSize(32);
 			String text = "Loading";
 			text(text, (width - textWidth(text)) / 2, height / 2);
@@ -82,7 +84,7 @@ public class InfoDisplay extends PApplet {
 			return;
 		}
 
-		if (initStage == 1) {
+		if(initStage == 1) {
 			heavySetup();
 			initStage = 2;
 
@@ -97,6 +99,7 @@ public class InfoDisplay extends PApplet {
 		transmitVideoCheckbox.draw();
 		brightnessSlider.draw();
 		movementVisualizer.draw();
+		faultList.draw();
 
 		textSize(14);
 		int clientCount = robotComm.getConnectedCount();
@@ -108,13 +111,6 @@ public class InfoDisplay extends PApplet {
 			String text = (clientCount == 1 ? "1 device connected" : clientCount + "devices connected") + " (" + robotComm.getPingMs() + "ms)";
 			fill(255, 255, 255);
 			text(text, (width - textWidth(text)) / 2, height - 90);
-		}
-
-		fill(255, 0, 0);
-		int yPos = height - 60;
-		for (FaultType type : robotComm.getActiveFaults()) {
-			text(type.getDisplayName(), (width - textWidth(type.getDisplayName())) / 2, yPos);
-			yPos += 20;
 		}
 		
 		textSize(13);

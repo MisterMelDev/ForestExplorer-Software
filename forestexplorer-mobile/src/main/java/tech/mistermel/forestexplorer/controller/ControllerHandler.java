@@ -78,7 +78,7 @@ public class ControllerHandler extends Thread {
 		if(this.fault == fault)
 			return;
 		this.fault = fault;
-		Launcher.instance().getCommunicationHandler().setFault(FaultType.CONTROLLER_COMMUNICATION, fault);
+		Launcher.instance().getCommunicationHandler().setFault(FaultType.CONTROLLER, fault);
 	}
 	
 	public void safeState() {

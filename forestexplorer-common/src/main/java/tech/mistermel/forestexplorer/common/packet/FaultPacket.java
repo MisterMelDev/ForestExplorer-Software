@@ -23,13 +23,13 @@ public class FaultPacket implements Packet {
 
 	@Override
 	public void write(NetOutput out) throws IOException {
-		out.writeInt(type.ordinal());
+		out.writeString(type.name());
 		out.writeBoolean(active);
 	}
 
 	@Override
 	public void read(NetInput in) throws IOException {
-		this.type = FaultType.values()[in.readInt()];
+		this.type = FaultType.valueOf(in.readString());
 		this.active = in.readBoolean();
 	}
 
