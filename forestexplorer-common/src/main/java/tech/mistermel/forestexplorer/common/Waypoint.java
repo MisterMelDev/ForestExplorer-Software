@@ -2,24 +2,39 @@ package tech.mistermel.forestexplorer.common;
 
 public class Waypoint {
 
-	private float latitude, longitude, radius;
+	private LatLng location;
+	private double radius;
 	
-	public Waypoint(float latitude, float longitude, float radius) {
-		this.latitude = latitude;
-		this.longitude = longitude;
+	public Waypoint(LatLng location, double radius) {
+		this.location = location;
 		this.radius = radius;
 	}
 	
-	public float getLatitude() {
-		return latitude;
-	}
-
-	public float getLongitude() {
-		return longitude;
+	public LatLng getLocation() {
+		return location;
 	}
 	
-	public float getRadius() {
+	public double getRadius() {
 		return radius;
+	}
+	
+	public static class LatLng {
+		
+		private double latitude, longitude;
+		
+		public LatLng(double latitude, double longitude) {
+			this.latitude = latitude;
+			this.longitude = longitude;
+		}
+		
+		public double getLatitude() {
+			return latitude;
+		}
+		
+		public double getLongitude() {
+			return longitude;
+		}
+		
 	}
 	
 }

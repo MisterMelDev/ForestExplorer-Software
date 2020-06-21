@@ -9,6 +9,7 @@ import com.github.steveice10.packetlib.io.NetOutput;
 import com.github.steveice10.packetlib.packet.Packet;
 
 import tech.mistermel.forestexplorer.common.Waypoint;
+import tech.mistermel.forestexplorer.common.Waypoint.LatLng;
 
 public class WaypointsPacket implements Packet {
 
@@ -25,9 +26,10 @@ public class WaypointsPacket implements Packet {
 	public void write(NetOutput out) throws IOException {
 		out.writeInt(waypoints.size());
 		for(Waypoint waypoint : waypoints) {
-			out.writeFloat(waypoint.getLatitude());
-			out.writeFloat(waypoint.getLongitude());
-			out.writeFloat(waypoint.getRadius());
+			LatLng location = waypoint.getLocation();
+			out.writeDouble(location.getLatitude());
+			out.writeDouble(location.getLongitude());
+			out.writeDouble(waypoint.getRadius());
 		}
 	}
 	
@@ -35,11 +37,7 @@ public class WaypointsPacket implements Packet {
 	public void read(NetInput in) throws IOException {
 		int length = in.readInt();
 		for(int i = 0; i < length; i++) {
-			float latitude = in.readFloat();
-			float longitude = in.readFloat();
-			float radius = in.readFloat();
-			
-			Waypoint waypoint = new Waypoint(latitude, longitude, radius);
+			Waypoint waypoint = new Waypoint(new LatLng(in.readDouble(), in.readDouble()), in.readDouble());
 			waypoints.add(waypoint);
 		}
 	}
