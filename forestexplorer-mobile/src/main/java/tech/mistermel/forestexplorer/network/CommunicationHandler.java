@@ -17,6 +17,7 @@ import tech.mistermel.forestexplorer.Launcher;
 import tech.mistermel.forestexplorer.common.FaultType;
 import tech.mistermel.forestexplorer.common.Waypoint.LatLng;
 import tech.mistermel.forestexplorer.common.packet.CameraMovementPacket;
+import tech.mistermel.forestexplorer.common.packet.CompassPacket;
 import tech.mistermel.forestexplorer.common.packet.FaultPacket;
 import tech.mistermel.forestexplorer.common.packet.GPSPacket;
 import tech.mistermel.forestexplorer.common.packet.KeepAlivePacket;
@@ -150,9 +151,18 @@ public class CommunicationHandler extends SessionAdapter {
 	}
 	
 	public void sendLocation(LatLng loc, int satteliteNum) {
+		this.setFault(FaultType.GPS, false);
+		
 		GPSPacket packet = new GPSPacket(loc, satteliteNum);
 		client.getSession().send(packet);
 		logger.info("New location: {} {} with {} sattelites", loc.getLatitude(), loc.getLongitude(), satteliteNum);
+	}
+	
+	public void sendCompass(double bearing) {
+		this.setFault(FaultType.COMPASS, false);
+		
+		CompassPacket packet = new CompassPacket(bearing);
+		client.getSession().send(packet);
 	}
 	
 	public void sendPower(float voltage, float current) {

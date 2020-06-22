@@ -47,6 +47,11 @@ public class Robot {
 	}
 	
 	public void setNavigationMode(NavigationMode navMode) {
+		if(navMode == NavigationMode.WAYPOINT && !navigator.startNavigation()) {
+			/* Navigation start failed, so don't change the navigation mode */
+			return;
+		}
+		
 		this.navMode = navMode;
 		logger.info("Navigation mode changed to {}", navMode.name());
 	}

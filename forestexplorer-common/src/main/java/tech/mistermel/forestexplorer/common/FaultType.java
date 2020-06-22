@@ -5,7 +5,8 @@ public enum FaultType {
 	BATTERY_TOO_LOW("Battery too low"),
 	CONTROLLER("Controller fault"),
 	CURRENT_SENSOR("Current sensor fault"),
-	GPS("GPS fault");
+	GPS("GPS fault"),
+	COMPASS("Compass fault");
 	
 	private String displayName;
 	

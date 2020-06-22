@@ -136,8 +136,22 @@ public class ControllerHandler extends Thread {
 				}
 				
 				Launcher.instance().getCommunicationHandler().sendLocation(loc, satteliteNum);
-				Launcher.instance().getCommunicationHandler().setFault(FaultType.GPS, false);
 				return;
+			}
+			
+			if(msg.equals("cf")) {
+				Launcher.instance().getCommunicationHandler().setFault(FaultType.COMPASS, true);
+				return;
+			}
+			
+			if(msg.startsWith("c")) {
+				double bearing = Double.parseDouble(msg.substring(1));
+				
+				if(Launcher.instance().getNavigationMode() == NavigationMode.WAYPOINT) {
+					Launcher.instance().getNavigator().onCompassUpdate(bearing);
+				}
+				
+				Launcher.instance().getCommunicationHandler().sendCompass(bearing);
 			}
 		}
 		

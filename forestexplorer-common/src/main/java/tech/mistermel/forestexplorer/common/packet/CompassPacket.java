@@ -1,4 +1,4 @@
-package tech.mistermel.forestexplorer.common.packet.waypoint;
+package tech.mistermel.forestexplorer.common.packet;
 
 import java.io.IOException;
 
@@ -6,25 +6,25 @@ import com.github.steveice10.packetlib.io.NetInput;
 import com.github.steveice10.packetlib.io.NetOutput;
 import com.github.steveice10.packetlib.packet.Packet;
 
-public class WaypointTargetPacket implements Packet {
+public class CompassPacket implements Packet {
 
-	private int newTarget;
+	private double bearing;
 	
 	@SuppressWarnings("unused")
-	private WaypointTargetPacket() {}
+	private CompassPacket() {}
 	
-	public WaypointTargetPacket(int newTarget) {
-		this.newTarget = newTarget;
+	public CompassPacket(double bearing) {
+		this.bearing = bearing;
 	}
 	
 	@Override
 	public void write(NetOutput out) throws IOException {
-		out.writeInt(newTarget);
+		out.writeDouble(bearing);
 	}
 	
 	@Override
 	public void read(NetInput in) throws IOException {
-		this.newTarget = in.readInt();
+		this.bearing = in.readDouble();
 	}
 	
 	@Override
@@ -32,9 +32,8 @@ public class WaypointTargetPacket implements Packet {
 		return false;
 	}
 	
-	public int getNewTarget() {
-		return newTarget;
+	public double getBearing() {
+		return bearing;
 	}
 	
 }
-

@@ -31,7 +31,7 @@ public class NavigationUtil {
 		double x1 = Math.toRadians(loc.getLatitude());
 		double x2 = Math.toRadians(dst.getLatitude());
 		double h1 = 1 - Math.cos(x1 - x2);
-		double h2 = 1 -Math.cos(Math.toRadians(loc.getLongitude() - dst.getLongitude()));
+		double h2 = 1 - Math.cos(Math.toRadians(loc.getLongitude() - dst.getLongitude()));
 		double h = h1 + Math.cos(x1) * Math.cos(x2) * h2;
 		double sortKey = Double.longBitsToDouble(Double.doubleToRawLongBits(h) & 0xFFFFFFFFFFFFFFF8L);
 		
