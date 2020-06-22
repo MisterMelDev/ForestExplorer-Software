@@ -14,6 +14,8 @@ import tech.mistermel.forestexplorer.Launcher;
 import tech.mistermel.forestexplorer.common.CameraMovementDirection;
 import tech.mistermel.forestexplorer.common.FaultType;
 import tech.mistermel.forestexplorer.common.MovementDirection;
+import tech.mistermel.forestexplorer.common.NavigationMode;
+import tech.mistermel.forestexplorer.common.Waypoint.LatLng;
 
 public class ControllerHandler extends Thread {
 
@@ -125,11 +127,15 @@ public class ControllerHandler extends Thread {
 			
 			if(msg.startsWith("l")) {
 				String[] args = msg.substring(1).split("/");
-				float latitude = Float.parseFloat(args[0]);
-				float longitude = Float.parseFloat(args[1]);
+				
+				LatLng loc = new LatLng(Double.parseDouble(args[0]), Double.parseDouble(args[1]));
 				int satteliteNum = Integer.parseInt(args[2]);
 				
-				Launcher.instance().getCommunicationHandler().sendLocation(latitude, longitude, satteliteNum);
+				if(Launcher.instance().getNavigationMode() == NavigationMode.WAYPOINT) {
+					Launcher.instance().getNavigator().onLocationUpdate(loc);
+				}
+				
+				Launcher.instance().getCommunicationHandler().sendLocation(loc, satteliteNum);
 				Launcher.instance().getCommunicationHandler().setFault(FaultType.GPS, false);
 				return;
 			}

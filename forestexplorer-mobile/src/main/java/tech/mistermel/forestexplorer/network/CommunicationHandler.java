@@ -15,6 +15,7 @@ import com.github.steveice10.packetlib.tcp.TcpSessionFactory;
 
 import tech.mistermel.forestexplorer.Launcher;
 import tech.mistermel.forestexplorer.common.FaultType;
+import tech.mistermel.forestexplorer.common.Waypoint.LatLng;
 import tech.mistermel.forestexplorer.common.packet.CameraMovementPacket;
 import tech.mistermel.forestexplorer.common.packet.FaultPacket;
 import tech.mistermel.forestexplorer.common.packet.GPSPacket;
@@ -23,6 +24,7 @@ import tech.mistermel.forestexplorer.common.packet.MovementPacket;
 import tech.mistermel.forestexplorer.common.packet.PowerPacket;
 import tech.mistermel.forestexplorer.common.packet.SetLightingPacket;
 import tech.mistermel.forestexplorer.common.packet.SetStreamingPacket;
+import tech.mistermel.forestexplorer.common.packet.waypoint.NavigationModePacket;
 import tech.mistermel.forestexplorer.util.PropertyFile;
 import tech.mistermel.forestexplorer.util.StreamerUtil;
 
@@ -94,6 +96,11 @@ public class CommunicationHandler extends SessionAdapter {
 			
 			return;
 		}
+		
+		if(packet instanceof NavigationModePacket) {
+			Launcher.instance().setNavigationMode(((NavigationModePacket) packet).getNavigationMode());
+			return;
+		}
 	}
 	
 	private class KeepAliveTask extends Thread {
@@ -142,10 +149,10 @@ public class CommunicationHandler extends SessionAdapter {
 		client.getSession().send(packet);
 	}
 	
-	public void sendLocation(float latitude, float longitude, int satteliteNum) {
-		GPSPacket packet = new GPSPacket(latitude, longitude, satteliteNum);
+	public void sendLocation(LatLng loc, int satteliteNum) {
+		GPSPacket packet = new GPSPacket(loc, satteliteNum);
 		client.getSession().send(packet);
-		logger.info("New location: {} {} with {} sattelites", latitude, longitude, satteliteNum);
+		logger.info("New location: {} {} with {} sattelites", loc.getLatitude(), loc.getLongitude(), satteliteNum);
 	}
 	
 	public void sendPower(float voltage, float current) {

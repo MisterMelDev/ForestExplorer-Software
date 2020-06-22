@@ -6,31 +6,31 @@ import com.github.steveice10.packetlib.io.NetInput;
 import com.github.steveice10.packetlib.io.NetOutput;
 import com.github.steveice10.packetlib.packet.Packet;
 
+import tech.mistermel.forestexplorer.common.Waypoint.LatLng;
+
 public class GPSPacket implements Packet {
 
-	private float latitude, longitude;
+	private LatLng location;
 	private int satteliteNum;
 	
 	@SuppressWarnings("unused")
 	private GPSPacket() {}
 	
-	public GPSPacket(float latitude, float longitude, int satteliteNum) {
-		this.latitude = latitude;
-		this.longitude = longitude;
+	public GPSPacket(LatLng location, int satteliteNum) {
+		this.location = location;
 		this.satteliteNum = satteliteNum;
 	}
 	
 	@Override
 	public void write(NetOutput out) throws IOException {
-		out.writeFloat(latitude);
-		out.writeFloat(longitude);
+		out.writeDouble(location.getLatitude());
+		out.writeDouble(location.getLongitude());
 		out.writeInt(satteliteNum);
 	}
 	
 	@Override
 	public void read(NetInput in) throws IOException {
-		this.latitude = in.readFloat();
-		this.longitude = in.readFloat();
+		this.location = new LatLng(in.readDouble(), in.readDouble());
 		this.satteliteNum = in.readInt();
 	}
 	
@@ -39,12 +39,8 @@ public class GPSPacket implements Packet {
 		return false;
 	}
 	
-	public float getLatitude() {
-		return latitude;
-	}
-	
-	public float getLongitude() {
-		return longitude;
+	public LatLng getLocation() {
+		return location;
 	}
 	
 	public int getSatteliteNum() {

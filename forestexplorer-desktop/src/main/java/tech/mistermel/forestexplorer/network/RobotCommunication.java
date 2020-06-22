@@ -16,6 +16,7 @@ import com.github.steveice10.packetlib.tcp.TcpSessionFactory;
 import tech.mistermel.forestexplorer.common.CameraMovementDirection;
 import tech.mistermel.forestexplorer.common.FaultType;
 import tech.mistermel.forestexplorer.common.MovementDirection;
+import tech.mistermel.forestexplorer.common.Waypoint.LatLng;
 import tech.mistermel.forestexplorer.common.packet.CameraMovementPacket;
 import tech.mistermel.forestexplorer.common.packet.FaultPacket;
 import tech.mistermel.forestexplorer.common.packet.GPSPacket;
@@ -33,7 +34,7 @@ public class RobotCommunication extends SessionAdapter {
 	private Server server;
 	
 	private float voltage, current;
-	private float latitude, longitude;
+	private LatLng loc;
 	private int satteliteNum;
 	
 	private MovementDirection movement = MovementDirection.STATIONARY;
@@ -67,16 +68,15 @@ public class RobotCommunication extends SessionAdapter {
 		
 		if(packet instanceof GPSPacket) {
 			GPSPacket gpsPacket = (GPSPacket) packet;
-			latitude = gpsPacket.getLatitude();
-			longitude = gpsPacket.getLongitude();
-			satteliteNum = gpsPacket.getSatteliteNum();
+			this.loc = gpsPacket.getLocation();
+			this.satteliteNum = gpsPacket.getSatteliteNum();
 			return;
 		}
 		
 		if(packet instanceof PowerPacket) {
 			PowerPacket powerPacket = (PowerPacket) packet;
-			voltage = powerPacket.getVoltage();
-			current = powerPacket.getCurrent();
+			this.voltage = powerPacket.getVoltage();
+			this.current = powerPacket.getCurrent();
 			return;
 		}
 		
@@ -96,7 +96,7 @@ public class RobotCommunication extends SessionAdapter {
 		if(packet instanceof KeepAlivePacket) {
 			KeepAlivePacket keepAlivePacket = (KeepAlivePacket) packet;
 			if(keepAlivePacket.getPingTime() == lastPingTime) {
-				pingMs = (int) (System.currentTimeMillis() - lastPingTime);
+				this.pingMs = (int) (System.currentTimeMillis() - lastPingTime);
 			}
 		}
 	}
@@ -198,12 +198,8 @@ public class RobotCommunication extends SessionAdapter {
 		return current;
 	}
 	
-	public float getLatitude() {
-		return latitude;
-	}
-	
-	public float getLongitude() {
-		return longitude;
+	public LatLng getLocation() {
+		return loc;
 	}
 	
 	public int getSatteliteNum() {

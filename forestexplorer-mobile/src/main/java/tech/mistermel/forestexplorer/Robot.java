@@ -3,6 +3,7 @@ package tech.mistermel.forestexplorer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import tech.mistermel.forestexplorer.common.NavigationMode;
 import tech.mistermel.forestexplorer.controller.ControllerHandler;
 import tech.mistermel.forestexplorer.network.CommunicationHandler;
 
@@ -12,10 +13,14 @@ public class Robot {
 	
 	private CommunicationHandler communication;
 	private ControllerHandler controller;
+	private Navigator navigator;
+	
+	private NavigationMode navMode = NavigationMode.MANUAL;
 	
 	public Robot() {
 		this.communication = new CommunicationHandler();
 		this.controller = new ControllerHandler();
+		this.navigator = new Navigator();
 	}
 	
 	public void start() {
@@ -37,6 +42,13 @@ public class Robot {
 			} catch (InterruptedException e) {}
 		}
 		logger.info("Connected!");
+		
+		this.navMode = NavigationMode.MANUAL;
+	}
+	
+	public void setNavigationMode(NavigationMode navMode) {
+		this.navMode = navMode;
+		logger.info("Navigation mode changed to {}", navMode.name());
 	}
 	
 	public CommunicationHandler getCommunicationHandler() {
@@ -45,6 +57,14 @@ public class Robot {
 	
 	public ControllerHandler getControllerHandler() {
 		return controller;
+	}
+	
+	public Navigator getNavigator() {
+		return navigator;
+	}
+	
+	public NavigationMode getNavigationMode() {
+		return navMode;
 	}
 	
 }
