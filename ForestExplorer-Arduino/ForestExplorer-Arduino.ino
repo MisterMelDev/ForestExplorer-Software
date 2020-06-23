@@ -2,6 +2,7 @@
 #include <SoftwareSerial.h>
 #include <TinyGPS++.h>
 #include <PWMServo.h>
+#include <MPU9250.h>
 
 #define GPS_RX 9 // tx of the module
 #define GPS_TX 8 // rx of the module
@@ -19,6 +20,10 @@ PWMServo cameraServo;
 #define B1 4
 #define B2 5
 
+#define MAGNET_DECLINATION 2.06
+#define COMPASS_INTERVAL 200
+MPU9250 mpu;
+
 long maxLocationTime;
 bool gpsFault;
 
@@ -29,6 +34,11 @@ void setup() {
 
   gpsSerial.begin(GPS_BAUDRATE);
   cameraServo.attach(SERVO_PIN);
+
+  Wire.begin();
+  mpu.setMagneticDeclination(MAGNET_DECLINATION);
+  loadCalibration();
+  mpu.setup();
 
   pinMode(A1, OUTPUT);
   pinMode(A2, OUTPUT);
@@ -75,14 +85,15 @@ void setServo(int dir) {
 }
 
 void reset() {
-  Serial.println("RST");
   setRightMotor(0);
   setLeftMotor(0);
   setServo(0);
   setHeadlightsEnabled(false);
   setWarningLightsEnabled(false);
   setBrightness(100);
+  gpsFault = false;
   resetCommunication();
+  Serial.println("RST");
 }
 
 void loop() {

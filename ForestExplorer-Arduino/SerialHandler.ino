@@ -1,35 +1,43 @@
 String receivedData, packet;
 
-long voltageTimer;
+long voltageTimer, compassTimer;
 long pingSendTimer, pingReceiveTimer;
 
 boolean handshakeCompleted;
 long handshakeTimer;
 
 void loopCommunicationTimers() {
-  if(!handshakeCompleted && millis() >= handshakeTimer) {
+  if(handshakeCompleted) {
+    if(millis() >= pingReceiveTimer) {
+      reset();
+      return;
+    }
+
+    if(millis() >= pingSendTimer) {
+      Serial.println("p");
+      pingSendTimer = millis() + 500;
+    }
+
+    if(millis() >= compassTimer) {
+      mpu.update();
+      
+      Serial.print("C");
+      Serial.println(mpu.getYaw(), 2);
+      compassTimer = millis() + COMPASS_INTERVAL;
+    }
+
+    if(!gpsFault && millis() >= maxLocationTime) {
+      gpsFault = true;
+      Serial.println("lf");
+    }
+  } else if(millis() >= handshakeTimer) {
     Serial.println("H");
     handshakeTimer = millis() + 1000;
-  }
-
-  if(handshakeCompleted && millis() >= pingReceiveTimer) {
-    reset();
-  }
-
-  if(handshakeCompleted && millis() >= pingSendTimer) {
-    Serial.println("p");
-    pingSendTimer = millis() + 500;
-  }
-
-  if(!gpsFault && millis() >= maxLocationTime) {
-    gpsFault = true;
-    Serial.println("lf");
   }
 }
 
 void resetCommunication() {
   handshakeCompleted = false;
-  
 }
 
 void serialAvailable() {
