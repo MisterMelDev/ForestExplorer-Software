@@ -56,6 +56,10 @@ public class Checkbox extends ClickableComponent {
 		}
 	}
 	
+	public void setChecked(boolean checked) {
+		this.checked = checked;
+	}
+	
 	public boolean isChecked() {
 		return checked;
 	}
