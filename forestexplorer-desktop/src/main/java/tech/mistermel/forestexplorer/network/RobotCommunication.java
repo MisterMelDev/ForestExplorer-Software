@@ -18,6 +18,7 @@ import tech.mistermel.forestexplorer.common.FaultType;
 import tech.mistermel.forestexplorer.common.MovementDirection;
 import tech.mistermel.forestexplorer.common.Waypoint.LatLng;
 import tech.mistermel.forestexplorer.common.packet.CameraMovementPacket;
+import tech.mistermel.forestexplorer.common.packet.CompassPacket;
 import tech.mistermel.forestexplorer.common.packet.FaultPacket;
 import tech.mistermel.forestexplorer.common.packet.GPSPacket;
 import tech.mistermel.forestexplorer.common.packet.KeepAlivePacket;
@@ -46,10 +47,11 @@ public class RobotCommunication extends SessionAdapter {
 	private short brightness = 100;
 	
 	private int pingMs;
+	private long lastPingTime;
 	
 	private Set<FaultType> activeFaults = new HashSet<FaultType>();
 	
-	private long lastPingTime;
+	private double bearing;
 	
 	public RobotCommunication() {
 		this.server = new Server("0.0.0.0", PORT, ServerProtocol.class, new TcpSessionFactory());
@@ -91,6 +93,7 @@ public class RobotCommunication extends SessionAdapter {
 				activeFaults.remove(type);
 				logger.info("Fault cleared: {}", type.name());
 			}
+			return;
 		}
 		
 		if(packet instanceof KeepAlivePacket) {
@@ -98,6 +101,12 @@ public class RobotCommunication extends SessionAdapter {
 			if(keepAlivePacket.getPingTime() == lastPingTime) {
 				this.pingMs = (int) (System.currentTimeMillis() - lastPingTime);
 			}
+			return;
+		}
+		
+		if(packet instanceof CompassPacket) {
+			this.bearing = ((CompassPacket) packet).getBearing();
+			return;
 		}
 	}
 	
@@ -244,6 +253,10 @@ public class RobotCommunication extends SessionAdapter {
 	
 	public Set<FaultType> getActiveFaults() {
 		return activeFaults;
+	}
+	
+	public double getBearing() {
+		return bearing;
 	}
 	
 }

@@ -115,8 +115,12 @@ public class InfoDisplay extends PApplet {
 		
 		textSize(13);
 		fill(255, 255, 255);
-		String text = robotComm.getVoltage() + "v " + robotComm.getCurrent() + "A";
-		text(text, (width - textWidth(text)) / 2, 100);
+		
+		String batteryText = robotComm.getVoltage() + "v " + robotComm.getCurrent() + "A";
+		text(batteryText, (width - textWidth(batteryText)) / 2, 80);
+		
+		String bearingText = robotComm.getBearing() + "°";
+		text(bearingText, (width - textWidth(bearingText)) / 2, 100);
 	}
 
 	@Override

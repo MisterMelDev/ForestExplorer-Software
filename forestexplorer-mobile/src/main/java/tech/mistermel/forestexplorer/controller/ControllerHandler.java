@@ -144,7 +144,7 @@ public class ControllerHandler extends Thread {
 				return;
 			}
 			
-			if(msg.startsWith("c")) {
+			if(msg.startsWith("C")) {
 				double bearing = Double.parseDouble(msg.substring(1));
 				
 				if(Launcher.instance().getNavigationMode() == NavigationMode.WAYPOINT) {
