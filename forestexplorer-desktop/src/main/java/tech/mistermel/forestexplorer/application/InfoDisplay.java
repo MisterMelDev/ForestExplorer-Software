@@ -35,6 +35,7 @@ public class InfoDisplay extends PApplet {
 	@Override
 	public void setup() {
 		surface.setTitle("ForestExplorer");
+		surface.setLocation(0, 0);
 
 		this.headlightsCheckbox = new Checkbox(this, "Headlights", 10, 10);
 		headlightsCheckbox.setCallback((checked) -> {
@@ -64,7 +65,7 @@ public class InfoDisplay extends PApplet {
 		});
 
 		this.movementVisualizer = new MovementVisualizer(this, width / 2, height / 2);
-		this.faultList = new FaultList(this, 100, 100);
+		this.faultList = new FaultList(this, 100, 130);
 	}
 
 	public void heavySetup() {
@@ -130,12 +131,12 @@ public class InfoDisplay extends PApplet {
 
 	@Override
 	public void mouseDragged() {
-		if (draggingComponent != null) {
+		if(draggingComponent != null) {
 			draggingComponent.onClick();
 			return;
 		}
 
-		if (brightnessSlider.intersects(mouseX, mouseY)) {
+		if(brightnessSlider.intersects(mouseX, mouseY)) {
 			draggingComponent = brightnessSlider;
 			brightnessSlider.onClick();
 		}
