@@ -25,3 +25,10 @@ Subtotal: €272,60
 * **forestexplorer-desktop**: The application running on desktop to control the robot.
 * **forestexplorer-mobile**: The application running on the RPi in the robot.
 * **ForestExplorer-Arduino**: The code for the Arduino, which communicates over USB Serial with the RPi.
+* **CalibrationEEPROM**: Program used to calibrate the MPU9250.
+
+## Arduino libraries used
+* **Adafruit_Neopixel**: https://github.com/adafruit/Adafruit_NeoPixel
+* **TinyGPS++**: https://github.com/mikalhart/TinyGPSPlus
+* **PWMServo**: https://github.com/PaulStoffregen/PWMServo
+* **MPU9250**: https://github.com/MisterMelDev/MPU9250 (This modified version has limited Serial output)
