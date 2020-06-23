@@ -1,6 +1,8 @@
 package tech.mistermel.forestexplorer.network;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.slf4j.Logger;
@@ -13,9 +15,12 @@ import com.github.steveice10.packetlib.event.session.SessionAdapter;
 import com.github.steveice10.packetlib.packet.Packet;
 import com.github.steveice10.packetlib.tcp.TcpSessionFactory;
 
+import tech.mistermel.forestexplorer.Launcher;
 import tech.mistermel.forestexplorer.common.CameraMovementDirection;
 import tech.mistermel.forestexplorer.common.FaultType;
 import tech.mistermel.forestexplorer.common.MovementDirection;
+import tech.mistermel.forestexplorer.common.NavigationMode;
+import tech.mistermel.forestexplorer.common.Waypoint;
 import tech.mistermel.forestexplorer.common.Waypoint.LatLng;
 import tech.mistermel.forestexplorer.common.packet.CameraMovementPacket;
 import tech.mistermel.forestexplorer.common.packet.CompassPacket;
@@ -26,6 +31,10 @@ import tech.mistermel.forestexplorer.common.packet.MovementPacket;
 import tech.mistermel.forestexplorer.common.packet.PowerPacket;
 import tech.mistermel.forestexplorer.common.packet.SetLightingPacket;
 import tech.mistermel.forestexplorer.common.packet.SetStreamingPacket;
+import tech.mistermel.forestexplorer.common.packet.waypoint.NavigationModePacket;
+import tech.mistermel.forestexplorer.common.packet.waypoint.NavigationUpdatePacket;
+import tech.mistermel.forestexplorer.common.packet.waypoint.WaypointTargetPacket;
+import tech.mistermel.forestexplorer.common.packet.waypoint.WaypointsPacket;
 
 public class RobotCommunication extends SessionAdapter {
 
@@ -53,6 +62,12 @@ public class RobotCommunication extends SessionAdapter {
 	
 	private double bearing;
 	
+	private NavigationMode navMode;
+	
+	private List<Waypoint> waypoints = new ArrayList<>();
+	private int targetedWaypoint;
+	private double distanceToWaypoint;
+	
 	public RobotCommunication() {
 		this.server = new Server("0.0.0.0", PORT, ServerProtocol.class, new TcpSessionFactory());
 	}
@@ -72,6 +87,8 @@ public class RobotCommunication extends SessionAdapter {
 			GPSPacket gpsPacket = (GPSPacket) packet;
 			this.loc = gpsPacket.getLocation();
 			this.satteliteNum = gpsPacket.getSatteliteNum();
+			
+			Launcher.mapDisplay.updateLocation(loc);
 			return;
 		}
 		
@@ -106,6 +123,13 @@ public class RobotCommunication extends SessionAdapter {
 		
 		if(packet instanceof CompassPacket) {
 			this.bearing = ((CompassPacket) packet).getBearing();
+			return;
+		}
+		
+		if(packet instanceof NavigationUpdatePacket) {
+			NavigationUpdatePacket navUpdatePacket = (NavigationUpdatePacket) packet;
+			this.targetedWaypoint = navUpdatePacket.getTargetedWaypoint();
+			this.distanceToWaypoint = navUpdatePacket.getDistance();
 			return;
 		}
 	}
@@ -145,8 +169,7 @@ public class RobotCommunication extends SessionAdapter {
 			return;
 		
 		this.movement = movement;
-		MovementPacket packet = new MovementPacket(movement, speedPercentage);
-		this.sendPacket(packet);
+		this.sendPacket(new MovementPacket(movement, speedPercentage));
 	}
 	
 	public void sendCameraMovement(CameraMovementDirection cameraMovement) {
@@ -154,8 +177,7 @@ public class RobotCommunication extends SessionAdapter {
 			return;
 		
 		this.cameraMovement = cameraMovement;
-		CameraMovementPacket packet = new CameraMovementPacket(cameraMovement);
-		this.sendPacket(packet);
+		this.sendPacket(new CameraMovementPacket(cameraMovement));
 	}
 	
 	public void setWarningLightsEnabled(boolean warningLightsEnabled) {
@@ -190,13 +212,49 @@ public class RobotCommunication extends SessionAdapter {
 			brightness = 0;
 		}
 		
-		SetLightingPacket packet = new SetLightingPacket(warningLightsEnabled, headlightsEnabled, brightness);
-		this.sendPacket(packet);
+		this.sendPacket(new SetLightingPacket(warningLightsEnabled, headlightsEnabled, brightness));
 	}
 	
 	public void setStreamingEnabled(boolean streamingEnabled) {
-		SetStreamingPacket packet = new SetStreamingPacket(streamingEnabled);
-		this.sendPacket(packet);
+		this.sendPacket(new SetStreamingPacket(streamingEnabled));
+	}
+	
+	public void setNavigationMode(NavigationMode navMode) {
+		this.navMode = navMode;
+		this.sendPacket(new NavigationModePacket(navMode));
+	}
+	
+	public void sendWaypoints(List<Waypoint> waypoints) {
+		this.sendPacket(new WaypointsPacket(waypoints));
+	}
+	
+	public void setTargetedWaypoint(int targetedWaypoint) {
+		this.targetedWaypoint = targetedWaypoint;
+		this.sendPacket(new WaypointTargetPacket(targetedWaypoint));
+	}
+	
+	public double getDistanceToWaypoint() {
+		if(navMode != NavigationMode.WAYPOINT) {
+			return -1;
+		}
+		
+		return distanceToWaypoint;
+	}
+	
+	public Waypoint getTargetedWaypoint() {
+		if(navMode != NavigationMode.WAYPOINT) {
+			return null;
+		}
+		
+		return waypoints.get(targetedWaypoint);
+	}
+	
+	public List<Waypoint> getWaypoints() {
+		return waypoints;
+	}
+	
+	public NavigationMode getNavigationMode() {
+		return navMode;
 	}
 	
 	public float getVoltage() {
