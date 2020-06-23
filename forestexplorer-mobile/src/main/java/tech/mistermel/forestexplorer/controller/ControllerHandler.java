@@ -93,6 +93,12 @@ public class ControllerHandler extends Thread {
 		public void serialEvent(SerialPortEvent event) {
 			String msg = new String(event.getReceivedData()).trim();
 			
+			if(msg.startsWith("MSG")) {
+				String systemMsg = msg.substring(3);
+				logger.info("The controller sent the following message: {}", systemMsg.trim());
+				return;
+			}
+			
 			if(!handshakeCompleted) {
 				if(msg.equals("H")) {
 					logger.info("Handshaked with controller");
