@@ -3,7 +3,6 @@ package tech.mistermel.forestexplorer.application;
 import de.fhpotsdam.unfolding.UnfoldingMap;
 import de.fhpotsdam.unfolding.geo.Location;
 import de.fhpotsdam.unfolding.marker.AbstractMarker;
-import de.fhpotsdam.unfolding.marker.SimplePointMarker;
 import de.fhpotsdam.unfolding.providers.OpenStreetMap;
 import de.fhpotsdam.unfolding.utils.MapUtils;
 import de.fhpotsdam.unfolding.utils.ScreenPosition;
@@ -27,7 +26,10 @@ public class MapDisplay extends PApplet {
 		surface.setTitle("Map");
 		
 		map = new UnfoldingMap(this, new OpenStreetMap.OpenStreetMapProvider());
+		map.setZoomRange(50, 0);
 	    MapUtils.createDefaultEventDispatcher(this, map);
+	    
+	    this.updateLocation(new LatLng(52.125074, 5.867872));
 	}
 	
 	public void updateLocation(LatLng loc) {
@@ -52,9 +54,15 @@ public class MapDisplay extends PApplet {
 		return marker;
 	}
 	
+	@Override
+	public void mouseClicked() {
+		System.out.println(mouseX + " " + mouseY);
+	}
+	
 	public class DefaultMarker extends AbstractMarker {
 		
 		private int diameter = 15;
+		private int rotation;
 		
 		public DefaultMarker(Location loc) {
 			super(loc, null);
@@ -62,9 +70,16 @@ public class MapDisplay extends PApplet {
 		
 		@Override
 		public void draw(PGraphics pg, float x, float y) {
-			/*
-			pg.fill(0, 0, 255);
-			pg.ellipse(x, y, map.getZoomLevel(), map.getZoomLevel());*/
+			map.zoom(20.0f);
+			int size = map.getZoomLevel() - 5;
+			pg.noStroke();
+			pg.ellipse(x, y, size, size);
+			pg.pushMatrix();
+			pg.translate(x, y);
+			pg.rotate(radians(rotation));
+			pg.fill(0, 100, 255);
+			pg.triangle(-size, size * 2, size, size * 2, 0, 0);
+			pg.popMatrix();
 		}
 		
 		@Override
@@ -79,6 +94,10 @@ public class MapDisplay extends PApplet {
 		
 		public void setDiameter(int diameter) {
 			this.diameter = diameter;
+		}
+		
+		public void setRotation(int rotation) {
+			this.rotation = rotation;
 		}
 		
 	}
