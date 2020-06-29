@@ -19,6 +19,8 @@ void loopLights() {
   if(warningLightsEnabled && millis() >= warningLightsTimer) {
     warningLightsState = !warningLightsState;
     applyWarningLightsState();
+
+    warningLightsTimer = millis() + (warningLightsState ? 500 : 1000);
   }
 }
 
