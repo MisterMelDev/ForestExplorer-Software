@@ -22,4 +22,25 @@ public enum MovementDirection {
 		return rightMotorDir;
 	}
 	
+	public static MovementDirection getFromWebName(String str) {
+		switch(str) {
+			case "C":
+				return STATIONARY;
+			case "N":
+				return FORWARDS;
+			case "S":
+				return BACKWARDS;
+			case "E":
+			case "NE":
+			case "SE":
+				return RIGHT;
+			case "W":
+			case "NW":
+			case "SW":
+				return LEFT;
+			default:
+				return STATIONARY;
+		}
+	}
+	
 }

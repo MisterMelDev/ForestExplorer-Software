@@ -20,4 +20,8 @@ public class Robot {
 		return webHandler;
 	}
 	
+	public ControllerHandler getControllerHandler() {
+		return controllerHandler;
+	}
+	
 }
