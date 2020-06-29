@@ -69,7 +69,7 @@ public class ControllerHandler extends Thread {
 	
 	public void safeState() {
 		logger.info("Going to safe state");
-		this.setMovement(MovementDirection.STATIONARY);
+		this.setMovement(MovementDirection.STATIONARY, true);
 		
 		this.setHeadlightsEnabled(false);
 		this.setWarningLightsEnabled(false);
@@ -144,18 +144,23 @@ public class ControllerHandler extends Thread {
 		
 		serial.writeBytes(buffer, buffer.length);
 	}
-	 
+	
 	public void setMovement(MovementDirection movement) {
+		this.setMovement(movement, false);
+	}
+	 
+	public void setMovement(MovementDirection movement, boolean override) {
 		if(!handshakeCompleted)
 			return;
 		
-		if(this.movement == movement) {
+		if(this.movement == movement && !override) {
 			// Movement already set
 			return;
 		}
 		
 		this.sendCommand("l" + movement.getLeftMotorDir());
 		this.sendCommand("r" + movement.getRightMotorDir());
+		this.movement = movement;
 	}
 	
 	public void setHeadlightsEnabled(boolean headlightsEnabled) {
