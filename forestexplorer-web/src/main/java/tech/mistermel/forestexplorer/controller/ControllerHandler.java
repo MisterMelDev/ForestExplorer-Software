@@ -18,13 +18,8 @@ public class ControllerHandler extends Thread {
 	private SerialPort serial;
 	private boolean handshakeCompleted;
 	
-	private boolean headlightsEnabled;
-	private boolean warningLightsEnabled;
-	private int brightness;
-	
 	public ControllerHandler() {
 		super("ControllerHandlerThread");
-		this.selectPort();
 	}
 	
 	private void selectPort() {
@@ -40,6 +35,8 @@ public class ControllerHandler extends Thread {
 	
 	@Override
 	public void run() {
+		this.selectPort();
+		
 		if(serial.isOpen()) {
 			logger.warn("Unable to open port, already open");
 			return;
@@ -69,8 +66,12 @@ public class ControllerHandler extends Thread {
 	}
 	
 	public void safeState() {
+		logger.info("Going to safe state");
 		this.setMovement(MovementDirection.STATIONARY);
-		this.setLighting(false, false, 100);
+		
+		this.setHeadlightsEnabled(false);
+		this.setWarningLightsEnabled(false);
+		this.setBrightness(100);
 	}
 	
 	private class MessageListener implements SerialPortMessageListener {
@@ -99,7 +100,7 @@ public class ControllerHandler extends Thread {
 				return;
 			}
 			
-			logger.debug("Controller message recieved: {}", msg);
+			logger.debug("Controller message received: {}", msg);
 			
 			if(msg.equals("RST")) {
 				reset();
@@ -124,9 +125,6 @@ public class ControllerHandler extends Thread {
 	
 	private void reset() {
 		handshakeCompleted = false;
-		headlightsEnabled = false;
-		warningLightsEnabled = false;
-		brightness = 100;
 	}
 	
 	private void sendCommand(String cmd) {
@@ -154,24 +152,25 @@ public class ControllerHandler extends Thread {
 		this.sendCommand("r" + movement.getRightMotorDir());
 	}
 	
-	public void setLighting(boolean headlightsEnabled, boolean warningLightsEnabled, int brightness) {
+	public void setHeadlightsEnabled(boolean headlightsEnabled) {
 		if(!handshakeCompleted)
 			return;
 		
-		if(headlightsEnabled != this.headlightsEnabled) {
-			this.sendCommand("h" + (headlightsEnabled ? "1" : "0"));
-			this.headlightsEnabled = headlightsEnabled;
-		} else logger.debug("Ignoring headlights, already set");
+		this.sendCommand("h" + (headlightsEnabled ? "1" : "0"));
+	}
+	
+	public void setWarningLightsEnabled(boolean warningLightsEnabled) {
+		if(!handshakeCompleted)
+			return;
 		
-		if(warningLightsEnabled != this.warningLightsEnabled) {
-			this.sendCommand("w" + (warningLightsEnabled ? "1" : "0"));
-			this.warningLightsEnabled = warningLightsEnabled;
-		} else logger.debug("Ignoring warning lights, already set");
+		this.sendCommand("w" + (warningLightsEnabled ? "1" : "0"));
+	}
+	
+	public void setBrightness(int brightness) {
+		if(!handshakeCompleted)
+			return;
 		
-		if(brightness != this.brightness) {
-			this.sendCommand("b" + brightness);
-			this.brightness = brightness;
-		} else logger.debug("Ignoring brightness, already set");
+		this.sendCommand("b" + brightness);
 	}
 	
 }
