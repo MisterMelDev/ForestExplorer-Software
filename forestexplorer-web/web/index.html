@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" href="main.css">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        <title>ForestExplorer</title>
+    </head>
+    <body>
+        <h1>ForestExplorer Controller</h1>
+        <p id="socket-state"><br></p>
+
+        <div id="joyDiv"></div><br>
+        
+        <button id="headlights" class="button-switch button-switch-disabled">Headlights</button>
+        <button id="warninglights" class="button-switch button-switch-disabled">Warning lights</button><br>
+        <input type="range" min="1" max="100" value="100" class="slider" id="lightBrightness" oninput="changeBrightness(this.value)" onchange="sendNewBrightness(this.value)"><span id="brightness-val"></span>
+
+        <script src="joy.min.js"></script>
+        <script src="main.js"></script>
+    </body>
+</html>

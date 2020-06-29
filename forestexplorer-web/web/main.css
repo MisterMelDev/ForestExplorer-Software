@@ -1,0 +1,27 @@
+body {
+    text-align: center;
+    font-family: sans-serif;
+}
+
+#joyDiv {
+    display: inline-block;
+    width: 250px;
+    height: 250px;
+}
+
+.button-switch {
+    padding: 7px;
+}
+
+.button-switch-disabled {
+    color: red;
+}
+
+.button-switch-enabled {
+    color: green;
+    font-weight: bold;
+}
+
+.slider {
+    margin-top: 10px;
+}
