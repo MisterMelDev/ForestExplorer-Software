@@ -27,16 +27,16 @@ public enum MovementDirection {
 			case "C":
 				return STATIONARY;
 			case "N":
+			case "NE":
+			case "NW":
 				return FORWARDS;
 			case "S":
+			case "SE":
+			case "SW":
 				return BACKWARDS;
 			case "E":
-			case "NE":
-			case "SE":
 				return RIGHT;
 			case "W":
-			case "NW":
-			case "SW":
 				return LEFT;
 			default:
 				return STATIONARY;
