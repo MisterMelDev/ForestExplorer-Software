@@ -18,6 +18,8 @@ public class ControllerHandler extends Thread {
 	private SerialPort serial;
 	private boolean handshakeCompleted;
 	
+	private MovementDirection movement;
+	
 	public ControllerHandler() {
 		super("ControllerHandlerThread");
 	}
@@ -125,6 +127,7 @@ public class ControllerHandler extends Thread {
 	
 	private void reset() {
 		handshakeCompleted = false;
+		movement = MovementDirection.STATIONARY;
 	}
 	
 	private void sendCommand(String cmd) {
@@ -143,8 +146,11 @@ public class ControllerHandler extends Thread {
 	}
 	 
 	public void setMovement(MovementDirection movement) {
-		if(!handshakeCompleted) {
-			logger.debug("Did not send movement, handshake not complete");
+		if(!handshakeCompleted)
+			return;
+		
+		if(this.movement == movement) {
+			// Movement already set
 			return;
 		}
 		
@@ -153,6 +159,8 @@ public class ControllerHandler extends Thread {
 	}
 	
 	public void setHeadlightsEnabled(boolean headlightsEnabled) {
+		logger.debug("Headlights: {}", headlightsEnabled);
+		
 		if(!handshakeCompleted)
 			return;
 		
@@ -160,6 +168,8 @@ public class ControllerHandler extends Thread {
 	}
 	
 	public void setWarningLightsEnabled(boolean warningLightsEnabled) {
+		logger.debug("Warning lights: {}", warningLightsEnabled);
+		
 		if(!handshakeCompleted)
 			return;
 		
@@ -167,6 +177,8 @@ public class ControllerHandler extends Thread {
 	}
 	
 	public void setBrightness(int brightness) {
+		logger.debug("Brightness: {}", brightness);
+		
 		if(!handshakeCompleted)
 			return;
 		
